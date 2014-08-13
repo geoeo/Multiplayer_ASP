@@ -22,7 +22,7 @@ namespace Application.Utils
             if (request.User != null && request.User.Identity != null)
             {
                 string name = request.User.Identity.Name;
-                Logger.Debug(name);
+                Logger.Info(name);
                 return name;
             }
 
