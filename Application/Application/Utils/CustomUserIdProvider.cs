@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
+using NLog;
 
 namespace Application.Utils
 {
     public class CustomUserIdProvider : IUserIdProvider
     {
+        public static Logger Logger = LogManager.GetCurrentClassLogger();
+
         public string GetUserId(IRequest request)
         {
 
@@ -18,7 +21,9 @@ namespace Application.Utils
 
             if (request.User != null && request.User.Identity != null)
             {
-                return request.User.Identity.Name;
+                string name = request.User.Identity.Name;
+                Logger.Debug(name);
+                return name;
             }
 
             return null;
