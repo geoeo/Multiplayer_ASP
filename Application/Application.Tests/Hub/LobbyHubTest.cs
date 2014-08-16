@@ -14,7 +14,7 @@ namespace Application.Tests.Hub
     public class LobbyHubTest
     {
         private const BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Static;
-        private Stack<string> WaitingPlayerStack { get; set; } 
+        private Stack<string> WaitingPlayerStackRef { get; set; } 
 
         public LobbyHubTest()
         {
@@ -23,9 +23,9 @@ namespace Application.Tests.Hub
 
             Assert.IsNotNull(stackFieldInfo);
 
-            WaitingPlayerStack = stackFieldInfo.GetValue(null) as Stack<string>;
+            WaitingPlayerStackRef = stackFieldInfo.GetValue(null) as Stack<string>;
 
-            Assert.IsNotNull(WaitingPlayerStack);
+            Assert.IsNotNull(WaitingPlayerStackRef);
 
 
         }
@@ -73,8 +73,8 @@ namespace Application.Tests.Hub
         [TestInitialize]
         public void MyTestInitialize()
         {
-            WaitingPlayerStack.Clear();
-            Assert.AreEqual(0,WaitingPlayerStack.Count);
+            WaitingPlayerStackRef.Clear();
+            Assert.AreEqual(0,WaitingPlayerStackRef.Count);
         }
 
         private MethodInfo GetPrivateMethodInfoFor(string methodName)
@@ -91,8 +91,22 @@ namespace Application.Tests.Hub
             const string player1 = "player1";
             accessStackWithNew.Invoke(null, new Object[] {player1});
 
-            Assert.AreEqual(1,WaitingPlayerStack.Count);
-            Assert.AreEqual(player1,WaitingPlayerStack.Peek());
+            Assert.AreEqual(1,WaitingPlayerStackRef.Count);
+            Assert.AreEqual(player1,WaitingPlayerStackRef.Peek());
         }
+
+        [TestMethod]
+        public void AddingTwoPlayersToWaitingList()
+        {
+            var accessStackWithNew = GetPrivateMethodInfoFor("AccessStackWithNew");
+            const string player1 = "player1";
+            const string player2 = "player2";
+            accessStackWithNew.Invoke(null, new Object[] { player1 });
+            accessStackWithNew.Invoke(null, new Object[] { player2 });
+
+            Assert.AreEqual(0, WaitingPlayerStackRef.Count);
+        }
+
     }
+
 }

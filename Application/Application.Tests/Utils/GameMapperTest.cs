@@ -94,10 +94,9 @@ namespace Application.Tests.Utils
         }
         
         [TestMethod]
-        public void AddTwoPlayers()
+        public void AddingTwoPlayers()
         {
             
-
             const string player1 = "player1";
             const string player2 = "player2";
 
@@ -117,5 +116,24 @@ namespace Application.Tests.Utils
             Assert.IsTrue(DictionaryForPlayer2.TryGetValue(player2, out value));
             Assert.AreEqual(player1, value);
         }
+
+        [TestMethod]
+        public void RemoveAPlayer()
+        {
+            const string player1 = "player1";
+
+            AddingTwoPlayers();
+
+            Assert.AreEqual(1, DictionaryForPlayer1.Count);
+            Assert.AreEqual(1, DictionaryForPlayer2.Count);
+
+            GameMapper.Remove(player1);
+
+            Assert.AreEqual(0, DictionaryForPlayer1.Count);
+            Assert.AreEqual(0, DictionaryForPlayer2.Count);
+
+
+        }
+
     }
 }
