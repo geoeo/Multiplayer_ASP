@@ -6,31 +6,28 @@ namespace Application.Hub
 {
     public class LobbyHub : Microsoft.AspNet.SignalR.Hub
     {
-        private Stack<string> WaitingPlayersList { get; set; } 
-        private readonly Object _syncLock = new object();
+        private static readonly Stack<string> WaitingPlayerStack = new Stack<string>();
+        private static readonly Object SyncLock = new object();
 
         public void Join()
         {            
             var id = Context.User.Identity.Name;
 
-            AccessListWithNewId(id);
+            AccessStackWithNew(id);
 
             Clients.User(id).someMethodOnClient();
         }
 
-        // TODO: Write Unit Test
-        private void AccessListWithNewId(string id)
+        private static void AccessStackWithNew(string id)
         {
-            lock (_syncLock)
+            lock (SyncLock)
             {
-                WaitingPlayersList.Push(id);
-                if (WaitingPlayersList.Count%2 == 0)
-                {
-                    var player1 = WaitingPlayersList.Pop();
-                    var player2 = WaitingPlayersList.Pop();
+                WaitingPlayerStack.Push(id);
+                if (WaitingPlayerStack.Count%2 != 0) return;
+                var player1 = WaitingPlayerStack.Pop();
+                var player2 = WaitingPlayerStack.Pop();
 
-                    GameMapper.Add(player1, player2);
-                }
+                GameMapper.Add(player1, player2);
             }
         }
     }

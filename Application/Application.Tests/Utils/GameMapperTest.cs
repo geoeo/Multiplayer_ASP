@@ -16,8 +16,8 @@ namespace Application.Tests.Utils
     public class GameMapperTest
     {
 
-        public IDictionary<string, string> DictionaryForPlayer1 { get; set; }
-        public IDictionary<string, string> DictionaryForPlayer2 { get; set; }
+        private IDictionary<string, string> DictionaryForPlayer1 { get; set; }
+        private IDictionary<string, string> DictionaryForPlayer2 { get; set; }
 
         public GameMapperTest()
         {
@@ -36,6 +36,24 @@ namespace Application.Tests.Utils
 
             Assert.IsNotNull(DictionaryForPlayer1);
             Assert.IsNotNull(DictionaryForPlayer2);
+        }
+
+        private TestContext testContextInstance;
+
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
         }
 
         /// <summary>
@@ -78,6 +96,8 @@ namespace Application.Tests.Utils
         [TestMethod]
         public void AddTwoPlayers()
         {
+            
+
             const string player1 = "player1";
             const string player2 = "player2";
 
