@@ -3,14 +3,16 @@ using System.Reflection;
 using System.Text;
 using System.Collections.Generic;
 using Application.Hub;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Application.Utils.Interfaces;
+using NUnit.Framework;
+using Moq;
 
 namespace Application.Tests.Hub
 {
     /// <summary>
     /// Summary description for LobbyHubTest
-    /// </summary>s
-    [TestClass]
+    /// </summary>
+    [TestFixture]
     public class LobbyHubTest
     {
         private const BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Static;
@@ -70,7 +72,7 @@ namespace Application.Tests.Hub
         //
         #endregion
 
-        [TestInitialize]
+        [SetUp]
         public void MyTestInitialize()
         {
             WaitingPlayerStackRef.Clear();
@@ -84,27 +86,38 @@ namespace Application.Tests.Hub
             return dynMethod;
         }
 
-        [TestMethod]
+        [Test]
         public void AddingOnePlayerToWaitingList()
         {
             var accessStackWithNew = GetPrivateMethodInfoFor("AccessStackWithNew");
             const string player1 = "player1";
-            accessStackWithNew.Invoke(null, new Object[] {player1});
+
+            Mock<IGameMappable> gameMapperMock = new Mock<IGameMappable>();
+            gameMapperMock.Setup(x => x.Add("somePlayer", "someOtherPlayer"));
+
+            accessStackWithNew.Invoke(null, new Object[] { player1, gameMapperMock.Object });
 
             Assert.AreEqual(1,WaitingPlayerStackRef.Count);
             Assert.AreEqual(player1,WaitingPlayerStackRef.Peek());
+
+            gameMapperMock.Verify(x => x.Add("somePlayer", "someOtherPlayer"), Times.Never);
         }
 
-        [TestMethod]
+        [Test]
         public void AddingTwoPlayersToWaitingList()
         {
             var accessStackWithNew = GetPrivateMethodInfoFor("AccessStackWithNew");
             const string player1 = "player1";
             const string player2 = "player2";
-            accessStackWithNew.Invoke(null, new Object[] { player1 });
-            accessStackWithNew.Invoke(null, new Object[] { player2 });
+
+            Mock<IGameMappable> gameMapperMock = new Mock<IGameMappable>();
+            gameMapperMock.Setup(x => x.Add("player1", "player2"));
+
+            accessStackWithNew.Invoke(null, new Object[] { player1, gameMapperMock.Object });
+            accessStackWithNew.Invoke(null, new Object[] { player2, gameMapperMock.Object });
 
             Assert.AreEqual(0, WaitingPlayerStackRef.Count);
+            gameMapperMock.Verify(x => x.Add("player1", "player2"), Times.Once);
         }
 
     }

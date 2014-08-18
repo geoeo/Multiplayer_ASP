@@ -5,34 +5,35 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Collections.Generic;
 using Application.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Application.Tests.Utils
 {
     /// <summary>
     /// Summary description for GameMapperTest
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class GameMapperTest
     {
 
         private IDictionary<string, string> DictionaryForPlayer1 { get; set; }
         private IDictionary<string, string> DictionaryForPlayer2 { get; set; }
+        private GameMapper GameMapper { get; set; }
 
         public GameMapperTest()
         {
+            GameMapper = new GameMapper();
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
 
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
 
-
-            FieldInfo fieldForPlayer1 = typeof(GameMapper).GetField("OpponentOfPlayer1", flags);
-            FieldInfo fieldForPlayer2 = typeof(GameMapper).GetField("OpponentOfPlayer2", flags);
+            FieldInfo fieldForPlayer1 = typeof(GameMapper).GetField("_opponentOfPlayer1", flags);
+            FieldInfo fieldForPlayer2 = typeof(GameMapper).GetField("_opponentOfPlayer2", flags);
 
             Assert.IsNotNull(fieldForPlayer1);
             Assert.IsNotNull(fieldForPlayer2);
 
-            DictionaryForPlayer1 = fieldForPlayer1.GetValue(null) as Dictionary<string, string>;
-            DictionaryForPlayer2 = fieldForPlayer2.GetValue(null) as Dictionary<string, string>;
+            DictionaryForPlayer1 = fieldForPlayer1.GetValue(GameMapper) as Dictionary<string, string>;
+            DictionaryForPlayer2 = fieldForPlayer2.GetValue(GameMapper) as Dictionary<string, string>;
 
             Assert.IsNotNull(DictionaryForPlayer1);
             Assert.IsNotNull(DictionaryForPlayer2);
@@ -83,7 +84,7 @@ namespace Application.Tests.Utils
         //
         #endregion
         
-        [TestInitialize]
+        [SetUp]
         public void MyTestInitialize()
         {
             DictionaryForPlayer1.Clear();
@@ -93,7 +94,7 @@ namespace Application.Tests.Utils
             Assert.AreEqual(0, DictionaryForPlayer2.Count);
         }
         
-        [TestMethod]
+        [Test]
         public void AddingTwoPlayers()
         {
             
@@ -117,7 +118,7 @@ namespace Application.Tests.Utils
             Assert.AreEqual(player1, value);
         }
 
-        [TestMethod]
+        [Test]
         public void RemoveAPlayer()
         {
             const string player1 = "player1";
@@ -133,6 +134,12 @@ namespace Application.Tests.Utils
             Assert.AreEqual(0, DictionaryForPlayer2.Count);
 
 
+        }
+
+        [Test,ExpectedException(typeof(KeyNotFoundException))]
+        public void RemoveAPlayerFromEmpty()
+        {
+            GameMapper.Remove("invalid");
         }
 
     }

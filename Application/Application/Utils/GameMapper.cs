@@ -2,35 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Application.Utils.Interfaces;
 
 namespace Application.Utils
 {
-    public static class GameMapper
+    public class GameMapper : IGameMappable
     {
 
-        private static readonly IDictionary<string, string> OpponentOfPlayer1 = new Dictionary<string,string>();
+        private readonly IDictionary<string, string> _opponentOfPlayer1 = new Dictionary<string,string>();
 
-        private static readonly IDictionary<string, string> OpponentOfPlayer2 = new Dictionary<string, string>(); 
+        private readonly IDictionary<string, string> _opponentOfPlayer2 = new Dictionary<string, string>(); 
 
-        public static void Add(string player1, string player2)
+        public void Add(string player1, string player2)
         {
-            OpponentOfPlayer1.Add(player1,player2);
-            OpponentOfPlayer2.Add(player2, player1);
+            _opponentOfPlayer1.Add(player1,player2);
+            _opponentOfPlayer2.Add(player2,player1);
         }
 
         /* @arg - key for OpponentOfPlayer1
          */
-        public static void Remove(string player1)
+        public void Remove(string player1)
         {
             string player2 = null;
 
-            if (!OpponentOfPlayer1.TryGetValue(player1, out player2))
+            if (!_opponentOfPlayer1.TryGetValue(player1, out player2))
             {
                 throw new KeyNotFoundException(string.Format("Key: {0} does not exsist",player1));
             }
 
-            OpponentOfPlayer1.Remove(player1);
-            OpponentOfPlayer2.Remove(player2);
+            _opponentOfPlayer1.Remove(player1);
+            _opponentOfPlayer2.Remove(player2);
 
         }
 

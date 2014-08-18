@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ShowCheckBoxes="false">
+  <TopNode>[0-1007]D:\workspace\Visual_Studio\asp\Multiplayer_ASP\Application\Application.Tests\bin\Debug\Application.Tests.dll</TopNode>
+  <SelectedNode>[0-1008]Application</SelectedNode>
+  <ExcludeCategories>false</ExcludeCategories>
+  <Nodes>
+    <Node UniqueName="[0-1007]D:\workspace\Visual_Studio\asp\Multiplayer_ASP\Application\Application.Tests\bin\Debug\Application.Tests.dll" Expanded="true" />
+    <Node UniqueName="[0-1008]Application" Expanded="true" />
+    <Node UniqueName="[0-1009]Application.Tests" Expanded="true" />
+    <Node UniqueName="[0-1010]Application.Tests.Hub" Expanded="true" />
+    <Node UniqueName="[0-1000]Application.Tests.Hub.LobbyHubTest" Expanded="true" />
+    <Node UniqueName="[0-1011]Application.Tests.Utils" Expanded="true" />
+    <Node UniqueName="[0-1003]Application.Tests.Utils.GameMapperTest" Expanded="true" />
+  </Nodes>
+</VisualState>
