@@ -7,7 +7,7 @@ namespace Application.Hub
 {
     public class LobbyHub : Microsoft.AspNet.SignalR.Hub
     {
-        private static readonly Stack<string> WaitingPlayerStack = new Stack<string>();
+        private static readonly Queue<string> WaitingPlayerQueue = new Queue<string>();
         private static readonly IGameMappable GameMapper = new GameMapper();
         private static readonly Object SyncLock = new object();
 
@@ -15,20 +15,20 @@ namespace Application.Hub
         {            
             var id = Context.User.Identity.Name;
 
-            AccessStackWithNew(id,GameMapper);
+            AccessQueueWithNew(id, GameMapper);
 
             Clients.User(id).someMethodOnClient();
         }
 
 
-        private static void AccessStackWithNew(string id, IGameMappable gameMapper)
+        private static void AccessQueueWithNew(string id, IGameMappable gameMapper)
         {
             lock (SyncLock)
             {
-                WaitingPlayerStack.Push(id);
-                if (WaitingPlayerStack.Count%2 != 0) return;
-                var player2 = WaitingPlayerStack.Pop();
-                var player1 = WaitingPlayerStack.Pop();
+                WaitingPlayerQueue.Enqueue(id);
+                if (WaitingPlayerQueue.Count%2 != 0) return;
+                var player1 = WaitingPlayerQueue.Dequeue();
+                var player2 = WaitingPlayerQueue.Dequeue();
 
                 gameMapper.Add(player1, player2);
             }

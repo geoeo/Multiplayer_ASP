@@ -16,18 +16,18 @@ namespace Application.Tests.Hub
     public class LobbyHubTest
     {
         private const BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Static;
-        private Stack<string> WaitingPlayerStackRef { get; set; } 
+        private Queue<string> WaitingPlayerQueueRef { get; set; } 
 
         public LobbyHubTest()
         {
 
-            FieldInfo stackFieldInfo = typeof(LobbyHub).GetField("WaitingPlayerStack", Flags);
+            FieldInfo stackFieldInfo = typeof(LobbyHub).GetField("WaitingPlayerQueue", Flags);
 
             Assert.IsNotNull(stackFieldInfo);
 
-            WaitingPlayerStackRef = stackFieldInfo.GetValue(null) as Stack<string>;
+            WaitingPlayerQueueRef = stackFieldInfo.GetValue(null) as Queue<string>;
 
-            Assert.IsNotNull(WaitingPlayerStackRef);
+            Assert.IsNotNull(WaitingPlayerQueueRef);
 
 
         }
@@ -75,8 +75,8 @@ namespace Application.Tests.Hub
         [SetUp]
         public void MyTestInitialize()
         {
-            WaitingPlayerStackRef.Clear();
-            Assert.AreEqual(0,WaitingPlayerStackRef.Count);
+            WaitingPlayerQueueRef.Clear();
+            Assert.AreEqual(0,WaitingPlayerQueueRef.Count);
         }
 
         private MethodInfo GetPrivateMethodInfoFor(string methodName)
@@ -87,37 +87,54 @@ namespace Application.Tests.Hub
         }
 
         [Test]
-        public void AddingOnePlayerToWaitingList()
+        public void AddingOnePlayerToWaitingQueue()
         {
-            var accessStackWithNew = GetPrivateMethodInfoFor("AccessStackWithNew");
+            var accessStackWithNew = GetPrivateMethodInfoFor("AccessQueueWithNew");
             const string player1 = "player1";
 
             Mock<IGameMappable> gameMapperMock = new Mock<IGameMappable>();
-            gameMapperMock.Setup(x => x.Add("somePlayer", "someOtherPlayer"));
 
             accessStackWithNew.Invoke(null, new Object[] { player1, gameMapperMock.Object });
 
-            Assert.AreEqual(1,WaitingPlayerStackRef.Count);
-            Assert.AreEqual(player1,WaitingPlayerStackRef.Peek());
-
-            gameMapperMock.Verify(x => x.Add("somePlayer", "someOtherPlayer"), Times.Never);
+            Assert.AreEqual(1,WaitingPlayerQueueRef.Count);
+            Assert.AreEqual(player1,WaitingPlayerQueueRef.Peek());
         }
 
         [Test]
-        public void AddingTwoPlayersToWaitingList()
+        public void AddingTwoPlayersToWaitingQueue()
         {
-            var accessStackWithNew = GetPrivateMethodInfoFor("AccessStackWithNew");
+            var accessStackWithNew = GetPrivateMethodInfoFor("AccessQueueWithNew");
             const string player1 = "player1";
             const string player2 = "player2";
 
             Mock<IGameMappable> gameMapperMock = new Mock<IGameMappable>();
-            gameMapperMock.Setup(x => x.Add("player1", "player2"));
+            gameMapperMock.Setup(x => x.Add(player1, player2));
 
             accessStackWithNew.Invoke(null, new Object[] { player1, gameMapperMock.Object });
             accessStackWithNew.Invoke(null, new Object[] { player2, gameMapperMock.Object });
 
-            Assert.AreEqual(0, WaitingPlayerStackRef.Count);
-            gameMapperMock.Verify(x => x.Add("player1", "player2"), Times.Once);
+            Assert.AreEqual(0, WaitingPlayerQueueRef.Count);
+            gameMapperMock.Verify(x => x.Add(player1, player2), Times.Once);
+        }
+
+        [Test]
+        public void AddingThreePlayersToWaitingQueue()
+        {
+            var accessStackWithNew = GetPrivateMethodInfoFor("AccessQueueWithNew");
+            const string player1 = "player1";
+            const string player2 = "player2";
+            const string player3 = "player3";
+
+            Mock<IGameMappable> gameMapperMock = new Mock<IGameMappable>();
+            gameMapperMock.Setup(x => x.Add(player1, player2));
+
+            accessStackWithNew.Invoke(null, new Object[] { player1, gameMapperMock.Object });
+            accessStackWithNew.Invoke(null, new Object[] { player2, gameMapperMock.Object });
+            accessStackWithNew.Invoke(null, new Object[] { player3, gameMapperMock.Object });
+
+            Assert.AreEqual(1, WaitingPlayerQueueRef.Count);
+            Assert.AreEqual(player3, WaitingPlayerQueueRef.Peek());
+            gameMapperMock.Verify(x => x.Add(player1, player2), Times.Once);
         }
 
     }
